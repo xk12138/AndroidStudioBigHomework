@@ -1,8 +1,10 @@
 package com.example.douyin;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.media.MediaMetadataRetriever;
+import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +18,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
 import com.bumptech.glide.load.resource.bitmap.BitmapTransformation;
 import com.bumptech.glide.request.RequestOptions;
+import com.google.gson.Gson;
 
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
@@ -45,29 +48,41 @@ public class OverviewAdapter extends RecyclerView.Adapter<OverviewAdapter.Overvi
     public void onBindViewHolder(@NonNull OverviewHolder holder, int position) {
         if(context == null)
             return;
+        if(position >= dataList.size()) {
+            return;
+        }
         VideoInfo videoInfo = dataList.get(position);
         holder.id = videoInfo._id;
         holder.description.setText(videoInfo.description);
 
         //使用视频的第一帧作为封面
-        RequestOptions requestOptions = RequestOptions.frameOf(0);
-        requestOptions.set(FRAME_OPTION, MediaMetadataRetriever.OPTION_CLOSEST);
-        requestOptions.transform(new BitmapTransformation() {
-            @Override
-            protected Bitmap transform(@NonNull BitmapPool pool, @NonNull Bitmap toTransform, int outWidth, int outHeight) {
-                return toTransform;
-            }
+        Bitmap fistFrame, middleFrame;
+        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+        retriever.setDataSource(videoInfo.feedurl);
 
+        fistFrame = retriever.getFrameAtTime();
+        middleFrame = retriever.getFrameAtTime(1000, MediaMetadataRetriever.OPTION_PREVIOUS_SYNC);
+
+        Glide.with(context).load(fistFrame).into(holder.imageView);
+        Glide.with(context).load(middleFrame).into(holder.imageView2);
+
+        open(holder);
+    }
+
+    private void open(OverviewHolder holder) {
+        View.OnClickListener listener = new View.OnClickListener() {
             @Override
-            public void updateDiskCacheKey(@NonNull MessageDigest messageDigest) {
-                try {
-                    messageDigest.update((context.getPackageName() + "RotateTransform").getBytes("utf-8"));
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                }
+            public void onClick(View v) {
+                Intent intent = new Intent(context, MyViewPager2.class);
+                Gson gson = new Gson();
+                String list = gson.toJson(dataList);
+                intent.putExtra("dataList", list);
+                intent.putExtra("currentId", holder.id);
+                context.startActivity(intent);
             }
-        });
-        Glide.with(context).load(videoInfo.feedurl).apply(requestOptions).into(holder.imageView);
+        };
+        holder.imageView.setOnClickListener(listener);
+        holder.imageView2.setOnClickListener(listener);
     }
 
     @Override
@@ -80,10 +95,12 @@ public class OverviewAdapter extends RecyclerView.Adapter<OverviewAdapter.Overvi
         public String id;
         public TextView description;
         public ImageView imageView;
+        public ImageView imageView2;
 
         public OverviewHolder(@NonNull View itemView) {
             super(itemView);
             imageView = itemView.findViewById(R.id.imageView);
+            imageView2 = itemView.findViewById(R.id.imageView2);
             description = itemView.findViewById(R.id.id);
         }
     }

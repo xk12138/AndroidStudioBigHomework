@@ -91,15 +91,8 @@ public class MainActivity extends AppCompatActivity {
                 List<LinkedTreeMap> maps = new Gson().fromJson(response, List.class);
                 if(maps.size() != 0) {
                     List<VideoInfo> list = new ArrayList<>();
-                    for(Map map: maps) {
-                        VideoInfo vi = new VideoInfo();
-                        vi._id = (String)map.get("_id");
-                        vi.nickname = (String)map.get("nickname");
-                        vi.avatar = (String)map.get("avatar");
-                        vi.description = (String)map.get("description");
-                        vi.likecount = ((Double)map.get("likecount")).intValue();
-                        vi.feedurl = (String)map.get("feedurl");
-                        list.add(vi);
+                    for(LinkedTreeMap map: maps) {
+                        list.add(new VideoInfo(map));
                     }
                     adapter.setDataList(list);
                     handler.sendMessage(handler.obtainMessage(1));
