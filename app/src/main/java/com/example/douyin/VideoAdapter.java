@@ -1,6 +1,7 @@
 package com.example.douyin;
 
 import android.content.Context;
+import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +11,8 @@ import android.widget.VideoView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.bumptech.glide.Glide;
 
 import java.util.List;
 
@@ -36,6 +39,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoHolder>
         VideoInfo videoInfo = dataList.get(position);
         holder.videoView.setVideoPath(videoInfo.feedurl);
         holder.textView.setText(videoInfo.description);
+        holder.avatar.setBitmapUrl(videoInfo.avatar);
     }
 
     @Override
@@ -47,6 +51,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoHolder>
         private VideoView videoView;
         private TextView textView;
         private MediaController mediaController;
+        private CircleImageView avatar;
 
         public VideoHolder(@NonNull View itemView) {
             super(itemView);
@@ -59,6 +64,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoHolder>
             videoView.setMediaController(mediaController);
             mediaController.setMediaPlayer(videoView);
             textView = itemView.findViewById(R.id.title);
+            avatar = itemView.findViewById(R.id.avatar);
         }
     }
 
