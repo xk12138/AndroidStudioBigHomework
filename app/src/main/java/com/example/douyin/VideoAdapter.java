@@ -2,9 +2,12 @@ package com.example.douyin;
 
 import android.content.Context;
 import android.graphics.BitmapFactory;
+import android.media.Image;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.MediaController;
 import android.widget.TextView;
 import android.widget.VideoView;
@@ -39,7 +42,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoHolder>
         VideoInfo videoInfo = dataList.get(position);
         holder.videoView.setVideoPath(videoInfo.feedurl);
         holder.textView.setText(videoInfo.description);
-        holder.avatar.setBitmapUrl(videoInfo.avatar);
+        Glide.with(context).load(videoInfo.avatar).into(holder.avatar);
     }
 
     @Override
@@ -50,8 +53,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoHolder>
     public class VideoHolder extends RecyclerView.ViewHolder {
         private VideoView videoView;
         private TextView textView;
-        private MediaController mediaController;
-        private CircleImageView avatar;
+        private ImageView avatar;
 
         public VideoHolder(@NonNull View itemView) {
             super(itemView);
@@ -60,11 +62,19 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoHolder>
                 return;
             }
             videoView = itemView.findViewById(R.id.videoView);
-            mediaController = new MediaController(context);
-            videoView.setMediaController(mediaController);
-            mediaController.setMediaPlayer(videoView);
             textView = itemView.findViewById(R.id.title);
             avatar = itemView.findViewById(R.id.avatar);
+            videoView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(videoView.isPlaying()) {
+                        videoView.pause();
+                    }
+                    else {
+                        videoView.start();
+                    }
+                }
+            });
         }
     }
 

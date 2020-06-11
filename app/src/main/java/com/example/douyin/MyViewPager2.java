@@ -51,7 +51,7 @@ public class MyViewPager2 extends AppCompatActivity {
         }
 
         viewPager2 = findViewById(R.id.viewPager2);
-        viewPager2.setOrientation(RecyclerView.HORIZONTAL);
+        viewPager2.setOrientation(RecyclerView.VERTICAL);
         videoAdapter = new VideoAdapter();
         videoAdapter.context = MyViewPager2.this;
         videoAdapter.dataList = this.dataList;
